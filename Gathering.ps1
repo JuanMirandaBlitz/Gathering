@@ -1,5 +1,3 @@
-﻿
-
 function Gathering{
 
 #REQUIRES -Version 4.0 
@@ -80,6 +78,22 @@ function Gathering{
         mkdir $savePath > $null
         Write-Output "`n[*] Folder [$directory] created!"
     }
+    
+    #=====================================================#
+    #            DATE, HOUR AND COMPUTER NAME             #
+    #=====================================================#
+    
+    <#
+    Displays the time and day of the script's execution and gathers the name of the computer.
+    The results are saved in a file called Intro.txt.
+    #>
+    
+    Write-Output "=============EXECUTION TIME AND COMPUTER NAME==============" > $savePath\Introduction.txt
+    $date = Get-Date
+    $cname = $env:COMPUTERNAME
+    Write-Output "Execution date and hour: $date"  | Out-File -Append -FilePath $savePath\Introduction.txt
+    Write-Output "Computer name: $cname" | Out-File -Append -FilePath $savePath\Introduction.txt
+    
     
     #=====================================================#
     #                APPLICATIONS LIST                    #
@@ -169,7 +183,30 @@ function Gathering{
              
     Write-Output "============FIREWALL SETTINGS FOR ALL PROFILES==============" > $savePath\Firewall.txt
     netsh advfirewall show allprofile | Out-File -Append -FilePath $savePath\Firewall.txt
+    
+    
+    #================================================#
+    #                  TCP CONNECTIONS               #
+    #================================================#
+
+    <#
+    Gathers information of the established TCP Connections in the moment of the execution
+    #>
+    Write-Output "============TCP CONNECTIONS==============" > $savePath\TCPConnections.txt
+    Get-NetTCPConnection -State Established | Out-File -Append -FilePath $savePath\TCPConnections.txt
    
+   
+    #==========================================================#
+    #               RUNNING SERVICES AND PROCESS               #
+    #==========================================================#
+    <#
+    Gathers information of the running services and processes in the local machine
+    #>
+    Write-Output "============RUNNING SERVICES==============" > $savePath\ServicesProcesses.txt
+    Get-WmiObject -Class win32_Service | Out-File -Append -FilePath $savePath\ServicesProcesses.txt
+   
+    Write-Output "============RUNNING PROCESS==============" >> $savePath\ServicesProcesses.txt
+    Get-Process | Out-File -Append -FilePath $savePath\ServicesProcesses.txt
 
     #==========================================================#
     #                    VULNERABLE SERVICES                   #
